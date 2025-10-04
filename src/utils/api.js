@@ -1,8 +1,9 @@
 import axios from 'axios';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-// Use real Google Apps Script backend
-const USE_MOCK_API = false; // Backend is ready and working
+// Toggle between mock API and real Google Apps Script backend
+// Set to true for local testing without backend, false for production
+const USE_MOCK_API = !API_BASE_URL || API_BASE_URL.includes('YOUR_DEPLOYMENT_ID');
 
 const api = axios.create({
   baseURL: API_BASE_URL,
