@@ -105,21 +105,24 @@ export const login = async (username, password) => {
       username,
       password,
     });
-    
+
     console.log('Login response:', response.data);
     return response.data;
   } catch (error) {
     console.error('Login error:', error);
-    
-    // If CORS error in development, provide helpful message
-    if (error.message.includes('CORS') || error.message.includes('Network Error')) {
+
+    // If CORS error, provide helpful message
+    if (error.code === 'ERR_NETWORK' || error.message.includes('Network Error')) {
       return {
         success: false,
-        error: 'CORS error - please deploy to production to use real backend'
+        error: 'Connection failed. Please ensure your Google Apps Script is deployed with "Anyone" access and redeploy if needed.'
       };
     }
-    
-    throw error;
+
+    return {
+      success: false,
+      error: error.response?.data?.error || 'Network error. Please try again.'
+    };
   }
 };
 

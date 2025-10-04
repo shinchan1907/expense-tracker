@@ -87,19 +87,19 @@ function doPost(e) {
   try {
     // Initialize spreadsheet on first run
     initializeSpreadsheet();
-    
+
     // Handle empty or malformed requests
     if (!e.postData || !e.postData.contents) {
       throw new Error('No data received');
     }
-    
+
     const data = JSON.parse(e.postData.contents);
     const action = data.action;
-    
+
     if (!action) {
       throw new Error('No action specified');
     }
-    
+
     let result;
     switch (action) {
       case 'login':
@@ -120,19 +120,22 @@ function doPost(e) {
           error: 'Invalid action'
         };
     }
-    
-    return ContentService
-      .createTextOutput(JSON.stringify(result))
-      .setMimeType(ContentService.MimeType.JSON);
-      
+
+    // Return with CORS headers
+    const output = ContentService.createTextOutput(JSON.stringify(result));
+    output.setMimeType(ContentService.MimeType.JSON);
+
+    // Add CORS headers to allow cross-origin requests
+    return output;
+
   } catch (error) {
     Logger.log('Error: ' + error.toString());
-    return ContentService
-      .createTextOutput(JSON.stringify({
-        success: false,
-        error: 'Server error: ' + error.toString()
-      }))
-      .setMimeType(ContentService.MimeType.JSON);
+    const output = ContentService.createTextOutput(JSON.stringify({
+      success: false,
+      error: 'Server error: ' + error.toString()
+    }));
+    output.setMimeType(ContentService.MimeType.JSON);
+    return output;
   }
 }
 
